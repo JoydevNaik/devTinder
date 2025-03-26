@@ -1,20 +1,13 @@
 const express = require("express");
-
 const connectDb = require("./config/database");
-const { User } = require("./models/user");
+const authRouter = require("../routes/authRoutes");
+const profileRouter = require("../routes/profileRoutes");
+
 const app = express();
 
 app.use(express.json());
-
-app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-  try {
-    await user.save();
-    res.send("data save successfully");
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
+app.use("/", authRouter);
+app.use("/", profileRouter);
 
 connectDb()
   .then(() => {
@@ -24,5 +17,5 @@ connectDb()
     });
   })
   .catch((err) => {
-    console.error("Error not connected");
+    res.status(400).send(err.message);
   });
